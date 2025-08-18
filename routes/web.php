@@ -20,7 +20,7 @@ Route::get('/people', function () {
     return view('welcome');
 });
 
-Route::get('/api/locations/{factionCode}/candidates', [LocationController::class, 'getCandidates']);
+Route::get('/api/locations/{locationCode}/candidates', [LocationController::class, 'getCandidates']);
 Route::apiResource('/api/locations', LocationController::class);
 
 Route::delete('/api/people/{person}/skills/{skill}', [PersonSkillController::class, 'destroy']);

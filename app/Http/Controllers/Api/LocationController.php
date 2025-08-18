@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Location;
+use App\Models\LocationConnection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -13,7 +14,14 @@ class LocationController extends Controller
      */
     public function index()
     {
-        return $this->jsonResponse(Location::with('faction')->get());
+        $locations = Location::select('id', 'code', 'name', 'pos_x', 'pos_y', 'faction_code')
+            ->with([
+                'faction:id,code,name,color',
+                'neighbors:id,from_location_code,to_location_code',
+                'neighbors.toLocation:id,code,name,pos_x,pos_y,faction_code'
+            ])->get();
+
+        return $this->jsonResponse($locations);
     }
 
     /**
@@ -28,7 +36,7 @@ class LocationController extends Controller
         ]);
 
         $location = Location::create($validated);
-        return response()->json($location, 201);
+        return $this->jsonResponse($location, 201);
     }
 
     /**
@@ -54,7 +62,7 @@ class LocationController extends Controller
         ]);
 
         $location->update($validated);
-        return response()->json($location);
+        return $this->jsonResponse($location);
     }
 
     /**
@@ -68,11 +76,19 @@ class LocationController extends Controller
         return response()->json(['message' => 'Location deleted']);
     }
 
-    public function getCandidates($factionCode)
+    public function getCandidates($locationCode)
     {
-        $candidates = Location::where('faction_code', $factionCode)
+        $candidates = Location::join('location_connections', 'locations.code', '=', 'location_connections.to_location_code')
+            ->where('location_connections.from_location_code', $locationCode)
+            ->where('faction_code', function ($sub) use ($locationCode) {
+                $sub->select('faction_code')
+                    ->from('locations')
+                    ->where('code', $locationCode)
+                    ->limit(1);
+            })
+            //->select() // 返すのは隣接拠点
             ->get();
 
-        return response()->json($candidates);
+        return $this->jsonResponse($candidates);
     }
 }

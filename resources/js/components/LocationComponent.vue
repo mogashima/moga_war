@@ -53,7 +53,7 @@ const onMoveClicked = async () => {
 
     isMoving.value = true
     await nextTick()
-    moveComponent.value?.fetchLocations(props.location.faction_code)
+    moveComponent.value?.fetchLocations(props.location.code)
 }
 
 // 「一覧に戻る」押下

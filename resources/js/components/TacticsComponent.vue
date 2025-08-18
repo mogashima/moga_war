@@ -44,12 +44,17 @@ onMounted(async () => {
 })
 
 const targetableLocations = computed(() => {
-    if (!fromLocationId.value) return locations.value
-    const from = locations.value.find(l => l.id === fromLocationId.value)
-    if (!from || !from.faction_code) return locations.value
+    if (!fromLocationId.value) return []
 
+    const from = locations.value.find(l => l.id === fromLocationId.value)
+    if (!from || !from.faction_code) return []
+
+    // 隣接拠点のコードを取得（to_locationベース）
+    const neighborCodes = (from.neighbors || []).map(n => n.to_location?.code).filter(Boolean)
+
+    // 隣接かつ勢力が異なる拠点のみ返す
     return locations.value.filter(
-        l => l.id !== from.id && l.faction_code !== from.faction_code
+        l => l.id !== from.id && neighborCodes.includes(l.code) && l.faction_code !== from.faction_code
     )
 })
 

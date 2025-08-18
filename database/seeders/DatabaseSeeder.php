@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(FactionSeeder::class);
         $this->call(LocationSeeder::class);
+        $this->call(LocationConnectionSeeder::class);
         $this->call(PersonSeeder::class);
         $this->call(SkillSeeder::class);
         $this->call(PersonSkillCodeSeeder::class);

@@ -33,9 +33,9 @@ const emit = defineEmits(['cancelMove', 'moveCompleted'])
 const locations = ref([])
 const selectedLocation = ref(null)
 
-const fetchLocations = async (factionCode) => {
+const fetchLocations = async (locationCode) => {
     try {
-        const res = await axios.get(`/mogawar/public/api/locations/${factionCode}/candidates`)
+        const res = await axios.get(`/mogawar/public/api/locations/${locationCode}/candidates`)
         locations.value = res.data
     } catch (error) {
         console.error('拠点候補取得エラー:', error)

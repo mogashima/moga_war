@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Location extends Model
 {
@@ -15,5 +16,18 @@ class Location extends Model
     public function faction()
     {
         return $this->belongsTo(Faction::class, 'faction_code', 'code');
+    }
+
+    // 隣接する拠点を取得
+    public function neighbors()
+    {
+        return $this->hasMany(LocationConnection::class, 'from_location_code', 'code')
+            ->with('toLocation');
+    }
+
+    // 接続先の Location
+    public function toLocation()
+    {
+        return $this->belongsTo(Location::class, 'to_location_code', 'code');
     }
 }
