@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ExperienceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\LocationController;
@@ -30,3 +31,5 @@ Route::put('/api/people/{person}/move', [PersonController::class, 'move']);
 Route::get('/api/people', [PersonController::class, 'index']);
 
 Route::get('/api/skills', [SkillController::class, 'index']);
+
+Route::post('/api/experience/training', [ExperienceController::class, 'training']);

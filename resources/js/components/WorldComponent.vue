@@ -21,7 +21,7 @@
 
     <!-- 拠点詳細 -->
     <LocationComponent v-if="selectedLocation" :location="selectedLocation" @close="selectedLocation = null"
-      @moveCompleted="handleMoveCompleted" />
+      @moveCompleted="handleMoveCompleted" @trainingCompleted="handleTrainnigCompleted" />
   </div>
 </template>
 
@@ -61,6 +61,16 @@ const fetchLocationDetail = async (id) => {
 
 // LocationComponentからの移動完了イベントを受ける
 const handleMoveCompleted = (msg, status) => {
+  // メッセージをセットして画面に表示
+  message.value = msg
+  messageStatusClass.value = "flash-" + status
+  setTimeout(() => {
+    message.value = ''
+  }, 3000)
+}
+
+// LocationComponentからの訓練完了イベントを受ける
+const handleTrainnigCompleted = (msg, status) => {
   // メッセージをセットして画面に表示
   message.value = msg
   messageStatusClass.value = "flash-" + status

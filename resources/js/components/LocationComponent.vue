@@ -14,10 +14,15 @@
                 :factionCode="location.faction_code" @cancelMove="cancelMove" @moveCompleted="handleMoveCompleted" />
 
             <!-- 移動ボタン（移動モードでない＆人物がいる＆選択済） -->
-            <button v-if="!isMoving && location.people && location.people.length > 0" class="move-button"
-                :disabled="!selectedPerson" @click="onMoveClicked">
-                拠点を移動する
-            </button>
+            <div class="button-group" v-if="!isMoving && location.people && location.people.length > 0">
+                <button class="move-button" :disabled="!selectedPerson" @click="onMoveClicked">
+                    拠点を移動する
+                </button>
+
+                <button class="train-button" @click="onTrainClicked">
+                    訓練する
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -31,7 +36,7 @@ const props = defineProps({
     location: Object
 })
 
-const emit = defineEmits(['close', 'moveCompleted'])
+const emit = defineEmits(['close', 'moveCompleted', 'trainingCompleted'])
 
 const selectedPerson = ref(null)
 const isMoving = ref(false)
@@ -67,6 +72,29 @@ const handleMoveCompleted = (msg, status) => {
     selectedPerson.value = null
     emit('close')
     emit('moveCompleted', msg, status)
+}
+
+/** 訓練ボタン押下 */
+const onTrainClicked = async () => {
+    if (!props.location.people || props.location.people.length === 0) return
+
+    try {
+        // 全人物に固定値の経験値を付与（例: 50）
+        const payload = props.location.people.map(p => ({
+            person_id: p.id,
+            exp: 50
+        }))
+
+        const res = await axios.post('/mogawar/public/api/experience/training', payload)
+        // レスポンスで更新された人物情報が返るので location.people を更新
+        props.location.people = res.data.persons
+
+        emit('close')
+        emit('trainingCompleted', '訓練に成功しました！', 'success')
+    } catch (err) {
+        console.error('訓練エラー:', err)
+        alert('訓練に失敗しました。')
+    }
 }
 </script>
 
@@ -111,8 +139,9 @@ const handleMoveCompleted = (msg, status) => {
 }
 
 .move-button,
-.back-button {
-    background-color: #3498db;
+.back-button,
+.train-button {
+
     color: white;
     padding: 6px 12px;
     margin-top: 16px;
@@ -123,13 +152,31 @@ const handleMoveCompleted = (msg, status) => {
     font-size: 14px;
 }
 
-.move-button:hover,
-.back-button:hover {
-    background-color: #2980b9;
+.move-button,
+.back-button {
+    background-color: #3498db;
+
+    &:hover {
+        background-color: #2980b9;
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 }
 
-.move-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.train-button {
+    background-color: #2ecc71;
+
+    &:hover {
+        background-color: #27ae60;
+    }
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
 }
 </style>

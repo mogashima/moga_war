@@ -45,6 +45,7 @@
         <div class="modal-section">
           <span class="person-resist">耐性 : {{ selectedPerson.resist }}</span>
           <span class="person-agility">素早さ : {{ selectedPerson.agility }}</span>
+          <span class="person-exp">経験値 : {{ selectedPerson.exp }}</span>
         </div>
 
         <!-- スキル表示切替 -->

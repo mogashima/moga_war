@@ -1,7 +1,9 @@
 <?php
 namespace App\Types;
+
 use App\Helpers\RankAdjuster;
 use App\Helpers\StatRandomizer;
+
 enum JobType: string
 {
     case None = 'ノージョブ';
@@ -27,16 +29,41 @@ enum JobType: string
         };
     }
 
+    /**
+     * キャラクター作成時のステータス生成
+     */
     public function generateStats(int $rank = 1, float $randomRange = 0.1): array
     {
         $base = $this->baseStats();
 
-        // ランクによる補正を適用
+        // ランク補正
         $ranked = RankAdjuster::applyRank($base, $rank);
 
-        // ランダム補正を適用
+        // ランダム補正
         $randomized = StatRandomizer::applyRandom($ranked, $randomRange);
 
         return $randomized;
+    }
+
+    /**
+     * レベルアップ時のステータス成長
+     * - 現在のステータスに対して固定比率 or 小さなランダム変動で上昇
+     */
+    public function levelUpStats(array $currentStats, float $growthRate = 0.05, float $randomRange = 0.02): array
+    {
+        $newStats = [];
+
+        foreach ($currentStats as $key => $value) {
+            // 固定成長分
+            $increase = (int) round($value * $growthRate);
+
+            // 小さなランダム補正
+            $randFactor = 1 + (mt_rand() / mt_getrandmax() * 2 - 1) * $randomRange;
+            $increase = (int) round($increase * $randFactor);
+
+            $newStats[$key] = max(1, $value + $increase); // 1未満にならないように
+        }
+
+        return $newStats;
     }
 }
