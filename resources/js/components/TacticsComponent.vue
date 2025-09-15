@@ -29,7 +29,7 @@
 <script setup>
 import NavigationComponent from './NavigationComponent.vue'
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -39,7 +39,7 @@ const fromLocationId = ref('')
 const toLocationId = ref('')
 
 onMounted(async () => {
-    const res = await axios.get('/mogawar/public/api/locations')
+    const res = await axios.get('api/locations')
     locations.value = res.data
 })
 

@@ -47,7 +47,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import NavigationComponent from './NavigationComponent.vue'
 import LogComponent from './LogComponent.vue'
 
@@ -62,7 +62,7 @@ const winner = ref(null)
 const turn = ref(0)
 
 const fetchLocationDetail = async (id) => {
-    const res = await axios.get(`/mogawar/public/api/locations/${id}`)
+    const res = await axios.get(`api/locations/${id}`)
     return res.data
 }
 

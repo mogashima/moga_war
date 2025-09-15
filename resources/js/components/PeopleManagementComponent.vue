@@ -1,5 +1,10 @@
 <template>
   <div class="people-container">
+    <!-- ヘッダー + 追加ボタン -->
+    <div class="button-header">
+      <button class="add-person-button" @click="openAddPersonModal">追加</button>
+    </div>
+    <!-- 一覧 -->
     <table class="people-table">
       <thead>
         <tr>
@@ -75,23 +80,33 @@
       </div>
     </div>
 
+    <!-- 追加フォームモーダル -->
+    <div class="modal" v-if="isAddingPerson">
+      <div class="modal-content">
+        <button class="modal-close-button" @click="closeModal">×</button>
+        <PeopleFormComponent @saved="handlePersonSaved" @cancel="closeModal" />
+      </div>
+    </div>
+
     <NavigationComponent />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
+import PeopleFormComponent from './PeopleFormComponent.vue'
 import NavigationComponent from './NavigationComponent.vue'
 
 const people = ref([])
 const selectedPerson = ref(null)
 const isAddingSkill = ref(false)
 const allSkills = ref([])
+const isAddingPerson = ref(false)
 
 const fetchPeople = async () => {
   try {
-    const res = await axios.get('/mogawar/public/api/people')
+    const res = await axios.get('api/people')
     people.value = res.data
   } catch (err) {
     console.error('取得エラー:', err)
@@ -100,7 +115,7 @@ const fetchPeople = async () => {
 
 const fetchAllSkills = async () => {
   try {
-    const res = await axios.get('/mogawar/public/api/skills')
+    const res = await axios.get('api/skills')
     allSkills.value = res.data
   } catch (e) {
     console.error('スキル一覧取得エラー:', e)
@@ -113,14 +128,19 @@ const openModal = async (person) => {
   await fetchAllSkills()
 }
 
+const openAddPersonModal = () => {
+  isAddingPerson.value = true
+}
+
 const closeModal = () => {
   selectedPerson.value = null
   isAddingSkill.value = false
+  isAddingPerson.value = false
 }
 
 const removeSkill = async (skillId) => {
   try {
-    await axios.delete(`/mogawar/public/api/people/${selectedPerson.value.id}/skills/${skillId}`)
+    await axios.delete(`api/people/${selectedPerson.value.id}/skills/${skillId}`)
     selectedPerson.value.skills = selectedPerson.value.skills.filter(s => s.id !== skillId)
   } catch (e) {
     console.error('スキル削除失敗:', e)
@@ -129,7 +149,7 @@ const removeSkill = async (skillId) => {
 
 const addSkill = async (skillId) => {
   try {
-    await axios.post(`/mogawar/public/api/people/${selectedPerson.value.id}/skills`, {
+    await axios.post(`api/people/${selectedPerson.value.id}/skills`, {
       skill_id: skillId
     })
 
@@ -141,6 +161,11 @@ const addSkill = async (skillId) => {
   } catch (e) {
     console.error('スキル追加失敗:', e)
   }
+}
+
+const handlePersonSaved = async () => {
+  await fetchPeople()
+  closeAddModal()
 }
 
 onMounted(() => {
@@ -270,6 +295,26 @@ onMounted(() => {
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.button-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.add-person-button {
+  background-color: #2ecc71;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-person-button:hover {
+  background-color: #27ae60;
 }
 
 .modal-section li {

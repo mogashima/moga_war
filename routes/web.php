@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\ExperienceController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\PersonController;
+use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\LocationController;
-use App\Http\Controllers\Api\SkillController;
+use App\Http\Controllers\Api\PersonController;
 use App\Http\Controllers\Api\PersonSkillController;
+use App\Http\Controllers\Api\SkillController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,15 +22,22 @@ Route::get('/people', function () {
     return view('welcome');
 });
 
-Route::get('/api/locations/{locationCode}/candidates', [LocationController::class, 'getCandidates']);
-Route::apiResource('/api/locations', LocationController::class);
+Route::prefix('api')->group(function () {
+    Route::prefix('locations')->group(function () {
+        Route::get('{locationCode}/candidates', [LocationController::class, 'getCandidates']);
+    });
+    Route::apiResource('locations', LocationController::class);
 
-Route::delete('/api/people/{person}/skills/{skill}', [PersonSkillController::class, 'destroy']);
-Route::post('/api/people/{person}/skills', [PersonSkillController::class, 'store']);
+    Route::delete('people/{person}/skills/{skill}', [PersonSkillController::class, 'destroy']);
+    Route::post('people/{person}/skills', [PersonSkillController::class, 'store']);
 
-Route::put('/api/people/{person}/move', [PersonController::class, 'move']);
-Route::get('/api/people', [PersonController::class, 'index']);
+    Route::put('people/{person}/move', [PersonController::class, 'move']);
+    Route::get('people', [PersonController::class, 'index']);
+    Route::post('people', [PersonController::class, 'store']);
 
-Route::get('/api/skills', [SkillController::class, 'index']);
+    Route::get('skills', [SkillController::class, 'index']);
+    Route::get('jobs', [JobController::class, 'index']);
 
-Route::post('/api/experience/training', [ExperienceController::class, 'training']);
+    Route::post('/api/experience/training', [ExperienceController::class, 'training']);
+
+});

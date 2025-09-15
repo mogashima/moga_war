@@ -12,15 +12,15 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToBattle = () => {
-    router.push('/mogawar/public/tactics')
+    router.push('tactics')
 }
 
 const goToPeople = () => {
-    router.push('/mogawar/public/people')
+    router.push('people')
 }
 
 const goToHome = () => {
-    router.push('/mogawar/public/')
+    router.push('/')
 }
 </script>
 

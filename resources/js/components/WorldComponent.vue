@@ -27,7 +27,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 import LocationComponent from './LocationComponent.vue'
 
 const locations = ref([])
@@ -37,7 +37,7 @@ const messageStatusClass = ref('flash-success') // ✅ 成功・失敗ステー�
 
 // 初期ロードで拠点一覧取得
 onMounted(async () => {
-  const response = await axios.get('/mogawar/public/api/locations')
+  const response = await axios.get('api/locations')
   locations.value = response.data
 })
 
@@ -51,7 +51,7 @@ const getMarkerStyle = (location) => ({
 // 拠点の詳細データ取得
 const fetchLocationDetail = async (id) => {
   try {
-    const response = await axios.get(`/mogawar/public/api/locations/${id}`)
+    const response = await axios.get(`api/locations/${id}`)
     selectedLocation.value = response.data
   } catch (error) {
     console.error('ロケーション詳細取得エラー:', error)

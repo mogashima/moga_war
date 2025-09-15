@@ -20,7 +20,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
+import axios from '@/plugins/axios'
 
 const props = defineProps({
     location: Object,       // 現在の拠点
@@ -35,7 +35,7 @@ const selectedLocation = ref(null)
 
 const fetchLocations = async (locationCode) => {
     try {
-        const res = await axios.get(`/mogawar/public/api/locations/${locationCode}/candidates`)
+        const res = await axios.get(`api/locations/${locationCode}/candidates`)
         locations.value = res.data
     } catch (error) {
         console.error('拠点候補取得エラー:', error)
@@ -51,7 +51,7 @@ const selectLocation = (loc) => {
 
 const confirmMove = async () => {
     try {
-        await axios.put(`/mogawar/public/api/people/${props.selectedPerson.id}/move`, {
+        await axios.put(`api/people/${props.selectedPerson.id}/move`, {
             destination_code: selectedLocation.value.code
         })
         emit('moveCompleted', `${props.selectedPerson.name} さんは ${selectedLocation.value.name} に移動しました。`, 'success')

@@ -85,7 +85,7 @@ const onTrainClicked = async () => {
             exp: 50
         }))
 
-        const res = await axios.post('/mogawar/public/api/experience/training', payload)
+        const res = await axios.post('api/experience/training', payload)
         // レスポンスで更新された人物情報が返るので location.people を更新
         props.location.people = res.data.persons
 
